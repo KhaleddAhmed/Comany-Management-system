@@ -19,7 +19,8 @@ namespace RouteC41.G02.PL.Controllers
         // /Department/Index
         public IActionResult Index()
 		{
-			return View();
+			var departments = _repostry.GetAll();
+			return View(departments);
 		}
 	}
 }
