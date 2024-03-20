@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RouteC41.G02.BLL.Interfaces
 {
-	internal interface IDepartmentReposotry
+	public interface IDepartmentReposotry
 	{
 		IEnumerable<Department> GetAll();
 
