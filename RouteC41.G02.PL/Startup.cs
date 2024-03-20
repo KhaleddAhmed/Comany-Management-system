@@ -32,7 +32,7 @@ namespace RouteC41.G02.PL
             ///services.AddScoped<DbContextOptions<ApplicationDbContext>>();
             services.AddDbContext<ApplicationDbContext>(options=>
             {
-                options.UseSqlServer(".;Database = MVCApplicationG02;Trusted_Connection = True");
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
         }
 
@@ -63,5 +63,5 @@ namespace RouteC41.G02.PL
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-    }
+    } 
 }
