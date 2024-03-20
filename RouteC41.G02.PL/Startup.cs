@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RouteC41.G02.BLL.Interfaces;
+using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Data;
 using System;
 using System.Collections.Generic;
@@ -34,6 +36,7 @@ namespace RouteC41.G02.PL
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddScoped<IDepartmentReposotry, DepartmentRepostry>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
