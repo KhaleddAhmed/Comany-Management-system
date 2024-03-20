@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
+using RouteC41.G02.DAL.Models;
 
 namespace RouteC41.G02.PL.Controllers
 {
@@ -21,6 +22,27 @@ namespace RouteC41.G02.PL.Controllers
 		{
 			var departments = _repostry.GetAll();
 			return View(departments);
+		}
+
+
+		[HttpGet]
+		public IActionResult Create()
+		{
+			
+			return View();
+		}
+
+		[HttpPost]
+		public IActionResult Create(Department department)
+		{
+			if(ModelState.IsValid)//Server side validation
+			{
+				var count=_repostry.Add(department);
+				if (count > 0)
+					return RedirectToAction(nameof(Index));
+			}
+			return View(department);
+
 		}
 	}
 }
