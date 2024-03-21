@@ -2,7 +2,6 @@
 using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Models;
-
 namespace RouteC41.G02.PL.Controllers
 {
 	//Inheritance : Department Controller is a Controller
