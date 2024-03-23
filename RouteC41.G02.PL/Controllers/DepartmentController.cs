@@ -43,5 +43,18 @@ namespace RouteC41.G02.PL.Controllers
 			return View(department);
 
 		}
+
+		[HttpGet]
+		public IActionResult Details(int? id)
+		{
+			if (id is null)
+				return BadRequest();
+			var department = _repostry.GetById(id.Value);
+			if(department == null)
+				return NotFound();
+
+			return View(department);
+
+		}
 	}
 }
