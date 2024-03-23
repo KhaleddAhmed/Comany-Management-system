@@ -114,5 +114,46 @@ namespace RouteC41.G02.PL.Controllers
 			}
 
 		}
+
+		[HttpGet]
+		public IActionResult Delete(int? id)
+		{
+			if(id is null)
+				return BadRequest();
+			var department=_repostry.GetById(id.Value);
+			if (department == null)
+				return NotFound();
+
+			return View(department);
+		}
+
+		[HttpPost]
+		public IActionResult Delete(Department department)
+		{
+          
+            try
+			{
+				_repostry.Delete(department);
+				return RedirectToAction(nameof(Index));
+			}
+			catch (Exception ex)
+			{
+				//Log Exception
+				//return View("Error",ex.Message);
+				if (env.IsDevelopment())
+				{
+					ModelState.AddModelError(string.Empty, "Cannot be deeleted");
+					
+				}
+				
+                    return View(department);
+            }
+
+
+			
+				
+
+		}
+
 	}
 }
