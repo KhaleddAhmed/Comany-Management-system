@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Models;
+using System;
 namespace RouteC41.G02.PL.Controllers
 {
 	//Inheritance : Department Controller is a Controller
@@ -9,11 +12,13 @@ namespace RouteC41.G02.PL.Controllers
 	public class DepartmentController : Controller
 	{
 		private readonly IDepartmentReposotry _repostry;
+        private readonly IWebHostEnvironment env;
 
-		public DepartmentController(IDepartmentReposotry repostry)
+        public DepartmentController(IDepartmentReposotry departmentrepostry,IWebHostEnvironment env)
         {
-			_repostry = repostry;
-			_repostry = repostry;
+			_repostry = departmentrepostry;
+            this.env = env;
+            _repostry = departmentrepostry;
 		}
 
         // /Department/Index
@@ -45,7 +50,7 @@ namespace RouteC41.G02.PL.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult Details(int? id)
+		public IActionResult Details(int? id,string ViewName="Details")
 		{
 			if (id is null)
 				return BadRequest();
@@ -53,7 +58,59 @@ namespace RouteC41.G02.PL.Controllers
 			if(department == null)
 				return NotFound();
 
-			return View(department);
+			return View(ViewName,department);
+
+		}
+
+		// /Department/Edit/10
+		[HttpGet]
+		public IActionResult Edit(int? id) 
+		{
+			///if(!id.HasValue)
+			///	return BadRequest();
+			///
+			///var department=_repostry.GetById(id.Value);
+			///
+			///if(department is null)
+			///	return NotFound();
+			///
+			///return View(department);
+			
+			return Details(id,"Edit");
+
+			
+		}
+
+		[HttpPost]
+		public IActionResult Edit([FromRoute] int id,Department department)
+		{
+
+
+			if (id != department.Id)
+				return BadRequest("An Error ya hamada");
+			if (!ModelState.IsValid)
+			{
+				return View(department);
+
+			}
+			
+			try
+			{
+                _repostry.Update(department);
+                return RedirectToAction(nameof(Index));
+			}
+			catch (Exception ex)
+			{
+				//1.Log Exception
+				//2.Friendly Messagee
+				if (env.IsDevelopment())
+					ModelState.AddModelError(string.Empty, ex.Message);
+
+				else
+					ModelState.AddModelError(string.Empty, "An Error Has ccured During Update The Department");
+
+				return View (department);
+			}
 
 		}
 	}
