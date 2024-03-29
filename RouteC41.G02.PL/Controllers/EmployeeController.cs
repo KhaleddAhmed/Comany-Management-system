@@ -20,6 +20,17 @@ namespace RouteC41.G02.PL.Controllers
         }
         public IActionResult Index()
         {
+            #region ViewBag vs ViewData
+            ////Binding Through Views's Dictionary:Transfer Data From Action To View and should be sent through the action that has same view name [One way]
+
+            ////1.ViewData
+            //ViewData["Message"] = "Hello ViewData";
+
+
+            ////2.ViewBag is a dynamic property based
+            //ViewBag.Message = "Hello From ViewBag"; 
+            #endregion
+
             var departments = _repository.GetAll();
             return View(departments);
         }
