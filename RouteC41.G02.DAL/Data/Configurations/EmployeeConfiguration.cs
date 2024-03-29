@@ -15,7 +15,7 @@ namespace RouteC41.G02.DAL.Data.Configurations
         {
           //Fluent Apis For Employee Domains
           builder.Property(E=>E.Name).HasColumnType("varchar").HasMaxLength(50).IsRequired();
-            builder.Property(E => E.Adrress).IsRequired() ;
+            builder.Property(E => E.EmailAddress).IsRequired() ;
 
             builder.Property(E => E.Salary).HasColumnType("decimal(12,2)");
             builder.Property(E => E.Gneder)

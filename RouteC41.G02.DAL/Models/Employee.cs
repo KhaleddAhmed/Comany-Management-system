@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -28,7 +29,7 @@ namespace RouteC41.G02.DAL.Models
 
         [Required]
         [MaxLength(50,ErrorMessage ="Max Length OF Name is 50 Chars")]
-        [MinLength(50, ErrorMessage = "Max Length OF Name is 50 Chars")]
+        [MinLength(5, ErrorMessage = "Min Length OF Name is 5 Chars")]
 
         public string Name { get; set; }
 
@@ -36,7 +37,7 @@ namespace RouteC41.G02.DAL.Models
         public int Age { get; set; }
 
 
-        [RegularExpression(@"^[0-9]{1,3}-[a-za-Z]{5,10}-[a-za-Z]{4-10}-[a-za-Z]{5,10}", ErrorMessage = "  Address Must Be Like 123-Street-City-Country")]
+        //[RegularExpression(@"^[0-9]{1,3}-[a-zA-Z]{5,10}-[a-zA-Z]{4-10}-[a-zA-Z]{5,10}$", ErrorMessage ="Address Must Be Like 123-Street-City-Country")]
         public string  Address { get; set; }
 
         [DataType(DataType.Currency)]
@@ -46,7 +47,8 @@ namespace RouteC41.G02.DAL.Models
         public bool IsActive { get; set; }
 
         [EmailAddress]
-        public string Adrress { get; set; }
+        [DisplayName("Email")]
+        public string EmailAddress { get; set; }
 
         [Display(Name ="Phone Number")]
         [Phone]
@@ -57,6 +59,8 @@ namespace RouteC41.G02.DAL.Models
 
         public bool IsDeleted { get; set; }
 
+
+        [DisplayName("Gender")]
         public Gender Gneder { get; set; }
 
         public EmpType EmpType { get; set; }
