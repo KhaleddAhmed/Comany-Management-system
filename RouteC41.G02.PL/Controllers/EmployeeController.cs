@@ -11,11 +11,13 @@ namespace RouteC41.G02.PL.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _repository;
+        private readonly IDepartmentReposotry _departmentRepo;
         private readonly IWebHostEnvironment env;
 
-        public EmployeeController(IEmployeeRepository repository, IWebHostEnvironment env)
+        public EmployeeController(IEmployeeRepository repository ,IDepartmentReposotry departmentRepo, IWebHostEnvironment env)
         {
             _repository = repository;
+            _departmentRepo = departmentRepo;
             this.env = env;
         }
         public IActionResult Index()
@@ -31,13 +33,14 @@ namespace RouteC41.G02.PL.Controllers
             //2.ViewBag is a dynamic property based
             ViewBag.Message = "Hello From ViewBag";
 
-            var departments = _repository.GetAll();
-            return View(departments);
+            var employees = _repository.GetAll();
+            return View(employees);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
+            //ViewData["Departments"]=_departmentRepo.GetAll();
             return View();
         }
 
@@ -84,6 +87,7 @@ namespace RouteC41.G02.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
+            //ViewData["Departments"] = _departmentRepo.GetAll();
             return Details(id, "Edit");
 
         }

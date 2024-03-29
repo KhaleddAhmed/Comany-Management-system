@@ -38,7 +38,10 @@ namespace RouteC41.G02.BLL.Repositries
 
         public IEnumerable<T> GetAll()
         {
-            return _context.Set<T>().AsNoTracking().ToList();
+            if(typeof(T)==typeof(Employee))
+                return (IEnumerable<T>) _context.Employees.Include(E=>E.Department).AsNoTracking();
+            else
+                return _context.Set<T>().AsNoTracking().ToList();
         }
 
         public T GetById(int id)
