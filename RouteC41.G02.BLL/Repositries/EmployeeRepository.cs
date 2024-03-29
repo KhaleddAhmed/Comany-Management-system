@@ -10,46 +10,16 @@ using System.Threading.Tasks;
 
 namespace RouteC41.G02.BLL.Repositries
 {
-    public class EmployeeRepository : IEmployeeRepository
+    public class EmployeeRepository : GenericRepository<Employee>, IEmployeeRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public EmployeeRepository(ApplicationDbContext dbContext)
+        public EmployeeRepository(ApplicationDbContext dbContext):base(dbContext) 
         {
-            _context = dbContext;
-        }
-        public int Add(Employee entity)
-        {
-            _context.Employees.Add(entity);
-            return _context.SaveChanges();
 
         }
-        public int Update(Employee entity)
+
+        public IQueryable<Employee> GetEmployeesByAddress(string address)
         {
-            _context.Employees.Update(entity);
-            return _context.SaveChanges();
-
-        }
-        public int Delete(Employee entity)
-        {
-            _context.Employees.Remove(entity);
-            return _context.SaveChanges();
-        }
-
-        public IEnumerable<Employee> GetAll()
-        {
-            return _context.Employees.AsNoTracking().ToList();
-        }
-
-        public Employee GetById(int id)
-        {
-            ///var Employee=_context.Employees.Local.Where(D=>D.Id==id).FirstOrDefault();
-            ///if (Employee==null)
-            ///	 Employee = _context.Employees.Where(D => D.Id == id).FirstOrDefault();
-            ///return Employee;
-
-            return _context.Employees.Find(id);
-
+          return  _context.Employees.Where(E=> E.Address.ToLower() == address.ToLower());   
         }
     }
 }

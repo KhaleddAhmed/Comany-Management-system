@@ -8,18 +8,9 @@ using System.Threading.Tasks;
 
 namespace RouteC41.G02.BLL.Interfaces
 {
-	public interface IDepartmentReposotry
+	public interface IDepartmentReposotry:IGenericRepository<Department>
 	{
-		IEnumerable<Department> GetAll();
-
-		Department GetById(int id);
-
-		int Add(Department entity);
-
-		int Update(Department entity);
-
-		int Delete(Department entity);
-
+		
 
 	}
 }

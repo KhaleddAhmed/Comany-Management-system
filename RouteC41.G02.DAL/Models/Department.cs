@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace RouteC41.G02.DAL.Models
 {
-    public class Department
+    public class Department:ModelBase
     {
-        public int Id { get; set; }
-
+       
         
         public string Code { get; set; }
        
