@@ -3,9 +3,16 @@
 @{
     ViewData["Title"] = "Index";
 
-    /// string viewDataMessage = ViewData["Message"] as string;//Enforce Type Safety
-    /// string viewBagMessgage = ViewBag.Message; //Can't Enforce Type SAafety
+     string viewDataMessage = ViewData["Message"] as string;//Enforce Type Safety
+     string viewBagMessgage = ViewBag.Message; //Can't Enforce Type SAafety
 
+}
+
+@if (!string.IsNullOrEmpty(TempData["Message"] as string))
+{
+    <div class="alert alert-primary">
+        @TempData["message"]
+    </div>
 }
 
 @*<div class="alert alert-warning">

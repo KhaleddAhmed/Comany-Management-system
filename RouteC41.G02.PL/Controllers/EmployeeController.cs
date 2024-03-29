@@ -20,16 +20,16 @@ namespace RouteC41.G02.PL.Controllers
         }
         public IActionResult Index()
         {
-            #region ViewBag vs ViewData
-            ////Binding Through Views's Dictionary:Transfer Data From Action To View and should be sent through the action that has same view name [One way]
+            TempData.Keep();
 
-            ////1.ViewData
-            //ViewData["Message"] = "Hello ViewData";
+            //Binding Through Views's Dictionary:Transfer Data From Action To View and should be sent through the action that has same view name [One way]
+
+            //1.ViewData
+            ViewData["Message"] = "Hello ViewData";
 
 
-            ////2.ViewBag is a dynamic property based
-            //ViewBag.Message = "Hello From ViewBag"; 
-            #endregion
+            //2.ViewBag is a dynamic property based
+            ViewBag.Message = "Hello From ViewBag";
 
             var departments = _repository.GetAll();
             return View(departments);
@@ -47,10 +47,20 @@ namespace RouteC41.G02.PL.Controllers
             if (ModelState.IsValid)
             {
                 var Count = _repository.Add(employee);
+
+                //3.TempData:Dictionary Type Property used to pass date between two consecutive requests if we want to complete more than that we use keep
                 if (Count > 0)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+                
+                   TempData["Message"] = "Employee Has Created Succesfully";
+                
+                else
+                
+                   TempData["Message"] = "An Error Has Occured Employee Can't be Created";
+                
+ 
+                
+                return RedirectToAction(nameof(Index));
+
             }
 
             return View(employee);
