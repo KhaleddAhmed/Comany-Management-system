@@ -28,6 +28,9 @@
                 <th>@Html.DisplayNameFor(D => D.EmailAddress)</th>
                 @* <th>@Html.DisplayNameFor(D => D.EmpType)</th> *@
                 @* <th>@Html.DisplayNameFor(D => D.CreationDate)</th> *@
+                <th>@Html.DisplayNameFor(D=>D.Phone)</th>
+                <th>@Html.DisplayNameFor(D => D.CreationDate)</th>
+
                 <th>Details</th>
                 <th>Update</th>
                 <th>Delete</th>
@@ -47,23 +50,12 @@
                     <td>@Html.DisplayFor(M => employee.IsActive)</td>
                     <td>@employee.Gneder</td>
                     <td>@Html.DisplayFor(M => employee.EmailAddress)</td>
+                    <td>@employee.Phone</td>
+                    <td>@employee.CreationDate</td>
 
-                <td>
-                    <a asp-controller="Employee" asp-action="Details" asp-route-id="@employee.Id" class="btn btn-warning">
-                        <i class="fas fa-eye"></i> Details
-                    </a>
-                </td>
-                 <td>
-                        <a asp-controller="Employee" asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-success">
-                            <i class="fas fa-edit"></i> Update
-                        </a>
-                  </td>
+                    <partial name="_ButtonsPartial" model="@employee.Id"/>
 
-                    <td>
-                        <a asp-controller="Employee" asp-action="Delete" asp-route-id="@employee.Id" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Delete
-                        </a>
-                    </td>
+               
              </tr>
             }
         </tbody>
