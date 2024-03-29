@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Data;
+using RouteC41.G02.PL.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,8 +37,9 @@ namespace RouteC41.G02.PL
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddScoped<IDepartmentReposotry, DepartmentRepostry>();
-            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+
+            services.AddApplicationServies();//ExtensionMethod inside Folder Extension
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

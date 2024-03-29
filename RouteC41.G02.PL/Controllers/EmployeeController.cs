@@ -14,10 +14,9 @@ namespace RouteC41.G02.PL.Controllers
         private readonly IDepartmentReposotry _departmentRepo;
         private readonly IWebHostEnvironment env;
 
-        public EmployeeController(IEmployeeRepository repository ,IDepartmentReposotry departmentRepo, IWebHostEnvironment env)
+        public EmployeeController(IEmployeeRepository repository /*,IDepartmentReposotry departmentRepo*/, IWebHostEnvironment env)
         {
             _repository = repository;
-            _departmentRepo = departmentRepo;
             this.env = env;
         }
         public IActionResult Index()
