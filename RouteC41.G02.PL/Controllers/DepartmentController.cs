@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Models;
+using RouteC41.G02.PL.ViewModels;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 namespace RouteC41.G02.PL.Controllers
 {
 	//Inheritance : Department Controller is a Controller
@@ -13,20 +18,22 @@ namespace RouteC41.G02.PL.Controllers
 	{
 		private readonly IDepartmentReposotry _repostry;
         private readonly IWebHostEnvironment env;
+        private readonly IMapper mapper;
 
-        public DepartmentController(IDepartmentReposotry departmentrepostry,IWebHostEnvironment env)
+        public DepartmentController(IDepartmentReposotry departmentrepostry,IWebHostEnvironment env,IMapper mapper )
         {
 			_repostry = departmentrepostry;
             this.env = env;
-            _repostry = departmentrepostry;
-		}
+            this.mapper = mapper;
+        }
 
         // /Department/Index
         public IActionResult Index()
 		{
-			var departments = _repostry.GetAll();
-			return View(departments);
-		}
+			var departments=_repostry.GetAll();
+            var mappedDepartments = mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentViewModel>>(departments);
+			return View(mappedDepartments);
+        }
 
 
 		[HttpGet]
@@ -37,30 +44,32 @@ namespace RouteC41.G02.PL.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Create(Department department)
+		public IActionResult Create(DepartmentViewModel departmentVM)
 		{
-			if(ModelState.IsValid)//Server side validation
+            var mappedDep = mapper.Map<DepartmentViewModel, Department>(departmentVM);
+            if (ModelState.IsValid)//Server side validation
 			{
-				var count=_repostry.Add(department);
+				var count=_repostry.Add(mappedDep);
 				if (count > 0)
 					return RedirectToAction(nameof(Index));
 			}
-			return View(department);
+			return View(mappedDep);
 
 		}
 
 		[HttpGet]
 		public IActionResult Details(int? id,string ViewName="Details")
 		{
-			if (id is null)
+			if (/*id is null*/ !id.HasValue)
 				return BadRequest();
 			var department = _repostry.GetById(id.Value);
-			if(department == null)
+			if(department is null)
 				return NotFound();
 
-			return View(ViewName,department);
+            var mappedDep = mapper.Map<Department, DepartmentViewModel>(department);
+            return View(ViewName, mappedDep);
 
-		}
+        }
 
 		// /Department/Edit/10
 		[HttpGet]
@@ -83,21 +92,21 @@ namespace RouteC41.G02.PL.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Edit([FromRoute] int id,Department department)
+		public IActionResult Edit([FromRoute] int id,DepartmentViewModel departmentVM)
 		{
 
-
-			if (id != department.Id)
-				return BadRequest("An Error ya hamada");
+            var mappedDep = mapper.Map<DepartmentViewModel, Department>(departmentVM);
+            if (id != departmentVM.Id)
+				return BadRequest();
 			if (!ModelState.IsValid)
 			{
-				return View(department);
+				return View(departmentVM);
 
 			}
 			
 			try
 			{
-                _repostry.Update(department);
+                _repostry.Update(mappedDep);
                 return RedirectToAction(nameof(Index));
 			}
 			catch (Exception ex)
@@ -110,7 +119,7 @@ namespace RouteC41.G02.PL.Controllers
 				else
 					ModelState.AddModelError(string.Empty, "An Error Has ccured During Update The Department");
 
-				return View (department);
+				return View (departmentVM);
 			}
 
 		}
@@ -118,22 +127,17 @@ namespace RouteC41.G02.PL.Controllers
 		[HttpGet]
 		public IActionResult Delete(int? id)
 		{
-			if(id is null)
-				return BadRequest();
-			var department=_repostry.GetById(id.Value);
-			if (department == null)
-				return NotFound();
-
-			return View(department);
+			return Details(id, "Delete");
 		}
 
 		[HttpPost]
-		public IActionResult Delete(Department department)
+		public IActionResult Delete(DepartmentViewModel departmentVM)
 		{
           
             try
 			{
-				_repostry.Delete(department);
+				var mappedDep=mapper.Map<DepartmentViewModel,Department>(departmentVM);
+				_repostry.Delete(mappedDep);
 				return RedirectToAction(nameof(Index));
 			}
 			catch (Exception ex)
@@ -146,7 +150,7 @@ namespace RouteC41.G02.PL.Controllers
 					
 				}
 				
-                    return View(department);
+                    return View(departmentVM);
             }
 
 

@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Models;
+using RouteC41.G02.PL.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RouteC41.G02.PL.Controllers
@@ -12,13 +15,15 @@ namespace RouteC41.G02.PL.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _repository;
-      //  private readonly IDepartmentReposotry _departmentRepo;
+     
         private readonly IWebHostEnvironment env;
+        private readonly IMapper mapper;
 
-        public EmployeeController(IEmployeeRepository repository /*,IDepartmentReposotry departmentRepo*/, IWebHostEnvironment env)
+        public EmployeeController(IEmployeeRepository repository /*,IDepartmentReposotry departmentRepo*/, IWebHostEnvironment env,IMapper mapper)
         {
             _repository = repository;
             this.env = env;
+            this.mapper = mapper;
         }
         public IActionResult Index(string searchInp)
         {
@@ -46,7 +51,8 @@ namespace RouteC41.G02.PL.Controllers
                  employees=_repository.SearchByName(searchInp.ToLower());
                 
             }
-            return View(employees);
+            var mappedEmployees = mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(employees);
+            return View(mappedEmployees);
 
 
         }
@@ -59,11 +65,12 @@ namespace RouteC41.G02.PL.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Employee employee)
+        public IActionResult Create(EmployeeViewModel employeeVM)
         {
+            var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
             if (ModelState.IsValid)
             {
-                var Count = _repository.Add(employee);
+                var Count = _repository.Add(mappedEmp);
 
                 //3.TempData:Dictionary Type Property used to pass date between two consecutive requests if we want to complete more than that we use keep
                 if (Count > 0)
@@ -80,7 +87,7 @@ namespace RouteC41.G02.PL.Controllers
 
             }
 
-            return View(employee);
+            return View(mappedEmp);
         }
 
         [HttpGet]
@@ -90,11 +97,12 @@ namespace RouteC41.G02.PL.Controllers
                 return BadRequest();
 
             var employee = _repository.GetById(id.Value);
+            var mappedEmp = mapper.Map<Employee, EmployeeViewModel>(employee);
             if (employee == null)
                 return NotFound();
 
 
-            return View(employee);
+            return View(ViewName,mappedEmp);
 
         }
 
@@ -108,19 +116,20 @@ namespace RouteC41.G02.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int? id, Employee employee)
+        public IActionResult Edit([FromRoute] int? id, EmployeeViewModel employeeVM)
         {
-            if (id != employee.Id)
+            if (id != employeeVM.Id)
                 return BadRequest("Errrorrr");
 
             if (!ModelState.IsValid)
             {
-                return View(employee);
+                return View(employeeVM);
             }
 
             try
             {
-                _repository.Update(employee);
+                var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+                _repository.Update(mappedEmp);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -131,7 +140,7 @@ namespace RouteC41.G02.PL.Controllers
                 else
                     ModelState.AddModelError(string.Empty, "An Error Has ccured During Update The Department");
 
-                return View(employee);
+                return View(employeeVM);
             }
         }
 
@@ -139,22 +148,18 @@ namespace RouteC41.G02.PL.Controllers
         [HttpGet]
         public IActionResult Delete(int? id)
         {
-            if (id is null)
-                return BadRequest();
-            var employee = _repository.GetById(id.Value);
-            if (employee == null)
-                return NotFound();
+            return Details(id, "Delete");
 
-            return View(employee);
         }
 
         [HttpPost]
-        public IActionResult Delete(Employee employee)
+        public IActionResult Delete(EmployeeViewModel employeeVM)
         {
 
             try
             {
-                _repository.Delete(employee);
+                var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+                _repository.Delete(mappedEmp);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -167,7 +172,7 @@ namespace RouteC41.G02.PL.Controllers
 
                 }
 
-                return View(employee);
+                return View(employeeVM);
             }
 
 
