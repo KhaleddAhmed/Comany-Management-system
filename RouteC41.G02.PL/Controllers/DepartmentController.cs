@@ -33,7 +33,7 @@ namespace RouteC41.G02.PL.Controllers
         // /Department/Index
         public IActionResult Index()
 		{
-			var departments=unitOfWork.DepartmentRepository.GetAll();
+			var departments=unitOfWork.Repository<Department>().GetAll();
             var mappedDepartments = mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentViewModel>>(departments);
 			return View(mappedDepartments);
         }
@@ -52,7 +52,7 @@ namespace RouteC41.G02.PL.Controllers
             var mappedDep = mapper.Map<DepartmentViewModel, Department>(departmentVM);
             if (ModelState.IsValid)//Server side validation
 			{
-				unitOfWork.DepartmentRepository.Add(mappedDep);
+				unitOfWork.Repository<Department>().Add(mappedDep);
 				var count = unitOfWork.Complete();
 				if (count > 0)
 					return RedirectToAction(nameof(Index));
@@ -66,7 +66,7 @@ namespace RouteC41.G02.PL.Controllers
 		{
 			if (/*id is null*/ !id.HasValue)
 				return BadRequest();
-			var department = unitOfWork.DepartmentRepository.GetById(id.Value);
+			var department = unitOfWork.Repository<Department>().GetById(id.Value);
 			if(department is null)
 				return NotFound();
 
@@ -110,7 +110,7 @@ namespace RouteC41.G02.PL.Controllers
 			
 			try
 			{
-                unitOfWork.DepartmentRepository.Update(mappedDep);
+                unitOfWork.Repository<Department>().Update(mappedDep);
 				unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
 			}
@@ -142,7 +142,7 @@ namespace RouteC41.G02.PL.Controllers
             try
 			{
 				var mappedDep=mapper.Map<DepartmentViewModel,Department>(departmentVM);
-				unitOfWork.DepartmentRepository.Delete(mappedDep);
+				unitOfWork.Repository<Department>().Delete(mappedDep);
 				unitOfWork.Complete();
 				return RedirectToAction(nameof(Index));
 			}

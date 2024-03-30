@@ -30,7 +30,7 @@ namespace RouteC41.G02.PL.Controllers
         {
             //TempData.Keep();
             var employees=Enumerable.Empty<Employee>();
-
+            var employeeRepo = unitOfWork.Repository<Employee>() as EmployeeRepository;
             #region ViewBagVsViewData
             ////Binding Through Views's Dictionary:Transfer Data From Action To View and should be sent through the action that has same view name [One way]
 
@@ -41,15 +41,15 @@ namespace RouteC41.G02.PL.Controllers
             ////2.ViewBag is a dynamic property based
             //ViewBag.Message = "Hello From ViewBag"; 
             #endregion
-            if(string.IsNullOrEmpty(searchInp))
+            if (string.IsNullOrEmpty(searchInp))
             {
-                 employees = unitOfWork.EmployeeRepository.GetAll();
+                 employees =employeeRepo.GetAll();
           
 
             }
             else
             {
-                 employees=unitOfWork.EmployeeRepository.SearchByName(searchInp.ToLower());
+                 employees=employeeRepo.SearchByName(searchInp.ToLower());
                 
             }
             var mappedEmployees = mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(employees);
@@ -71,7 +71,7 @@ namespace RouteC41.G02.PL.Controllers
             var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
             if (ModelState.IsValid)
             {
-                unitOfWork.EmployeeRepository.Add(mappedEmp);
+                unitOfWork.Repository<Employee>().Add(mappedEmp);
 
                 //2.Update Department
                 // unitOfWork.DepartmentRepository.Update(department)
@@ -105,7 +105,7 @@ namespace RouteC41.G02.PL.Controllers
             if (id is null)
                 return BadRequest();
 
-            var employee = unitOfWork.EmployeeRepository.GetById(id.Value);
+            var employee = unitOfWork.Repository<Employee>().GetById(id.Value);
             var mappedEmp = mapper.Map<Employee, EmployeeViewModel>(employee);
             if (employee == null)
                 return NotFound();
@@ -138,7 +138,7 @@ namespace RouteC41.G02.PL.Controllers
             try
             {
                 var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
-                unitOfWork.EmployeeRepository.Update(mappedEmp);
+                unitOfWork.Repository<Employee>().Update(mappedEmp);
                 unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
@@ -169,7 +169,7 @@ namespace RouteC41.G02.PL.Controllers
             try
             {
                 var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
-                unitOfWork.EmployeeRepository.Delete(mappedEmp);
+                unitOfWork.Repository<Employee>().Delete(mappedEmp);
                 unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
