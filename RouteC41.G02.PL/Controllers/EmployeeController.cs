@@ -14,14 +14,15 @@ namespace RouteC41.G02.PL.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepository _repository;
-     
+       // private readonly IEmployeeRepository _repository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IWebHostEnvironment env;
         private readonly IMapper mapper;
 
-        public EmployeeController(IEmployeeRepository repository /*,IDepartmentReposotry departmentRepo*/, IWebHostEnvironment env,IMapper mapper)
+        public EmployeeController( IUnitOfWork unitOfWork/*IEmployeeRepository repository*/ /*,IDepartmentReposotry departmentRepo*/, IWebHostEnvironment env,IMapper mapper)
         {
-            _repository = repository;
+            //_repository = repository;
+            this.unitOfWork = unitOfWork;
             this.env = env;
             this.mapper = mapper;
         }
@@ -42,13 +43,13 @@ namespace RouteC41.G02.PL.Controllers
             #endregion
             if(string.IsNullOrEmpty(searchInp))
             {
-                 employees = _repository.GetAll();
+                 employees = unitOfWork.EmployeeRepository.GetAll();
           
 
             }
             else
             {
-                 employees=_repository.SearchByName(searchInp.ToLower());
+                 employees=unitOfWork.EmployeeRepository.SearchByName(searchInp.ToLower());
                 
             }
             var mappedEmployees = mapper.Map<IEnumerable<Employee>, IEnumerable<EmployeeViewModel>>(employees);
@@ -70,7 +71,15 @@ namespace RouteC41.G02.PL.Controllers
             var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
             if (ModelState.IsValid)
             {
-                var Count = _repository.Add(mappedEmp);
+                unitOfWork.EmployeeRepository.Add(mappedEmp);
+
+                //2.Update Department
+                // unitOfWork.DepartmentRepository.Update(department)
+
+                //delete project
+                //unitOfWork.ProjectRepository.Remove(Project);
+
+                var Count=unitOfWork.Complete();
 
                 //3.TempData:Dictionary Type Property used to pass date between two consecutive requests if we want to complete more than that we use keep
                 if (Count > 0)
@@ -96,7 +105,7 @@ namespace RouteC41.G02.PL.Controllers
             if (id is null)
                 return BadRequest();
 
-            var employee = _repository.GetById(id.Value);
+            var employee = unitOfWork.EmployeeRepository.GetById(id.Value);
             var mappedEmp = mapper.Map<Employee, EmployeeViewModel>(employee);
             if (employee == null)
                 return NotFound();
@@ -129,7 +138,8 @@ namespace RouteC41.G02.PL.Controllers
             try
             {
                 var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
-                _repository.Update(mappedEmp);
+                unitOfWork.EmployeeRepository.Update(mappedEmp);
+                unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -159,7 +169,8 @@ namespace RouteC41.G02.PL.Controllers
             try
             {
                 var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
-                _repository.Delete(mappedEmp);
+                unitOfWork.EmployeeRepository.Delete(mappedEmp);
+                unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

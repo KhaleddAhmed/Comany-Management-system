@@ -18,24 +18,21 @@ namespace RouteC41.G02.BLL.Repositries
         {
             _context = dbContext;
         }
-        public int Add(T entity)
-        {
-            _context.Set<T>().Add(entity);
-            return _context.SaveChanges();
+        public void Add(T entity)
+          => _context.Set<T>().Add(entity);
 
-        }
-        public int Update(T entity)
-        {
-            _context.Set<T>().Update(entity);
-            return _context.SaveChanges();
 
-        }
-        public int Delete(T entity)
-        {
-            _context.Set<T>().Remove(entity);
-            return _context.SaveChanges();
-        }
+           
 
+        
+        public void Update(T entity)
+          => _context.Set<T>().Update(entity);
+
+        
+        public void Delete(T entity)
+           => _context.Set<T>().Remove(entity);
+    
+        
         public IEnumerable<T> GetAll()
         {
             if(typeof(T)==typeof(Employee))

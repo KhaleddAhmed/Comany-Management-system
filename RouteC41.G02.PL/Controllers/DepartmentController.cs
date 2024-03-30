@@ -16,13 +16,16 @@ namespace RouteC41.G02.PL.Controllers
 	//Association :Department Controller Has a DepartmentRepostry
 	public class DepartmentController : Controller
 	{
-		private readonly IDepartmentReposotry _repostry;
+        private readonly IUnitOfWork unitOfWork;
+
+        //private readonly IDepartmentReposotry _repostry;
         private readonly IWebHostEnvironment env;
         private readonly IMapper mapper;
 
-        public DepartmentController(IDepartmentReposotry departmentrepostry,IWebHostEnvironment env,IMapper mapper )
+        public DepartmentController(IUnitOfWork unitOfWork/*IDepartmentReposotry departmentrepostry*/,IWebHostEnvironment env,IMapper mapper )
         {
-			_repostry = departmentrepostry;
+            this.unitOfWork = unitOfWork;
+            //_repostry = departmentrepostry;
             this.env = env;
             this.mapper = mapper;
         }
@@ -30,7 +33,7 @@ namespace RouteC41.G02.PL.Controllers
         // /Department/Index
         public IActionResult Index()
 		{
-			var departments=_repostry.GetAll();
+			var departments=unitOfWork.DepartmentRepository.GetAll();
             var mappedDepartments = mapper.Map<IEnumerable<Department>, IEnumerable<DepartmentViewModel>>(departments);
 			return View(mappedDepartments);
         }
@@ -49,7 +52,8 @@ namespace RouteC41.G02.PL.Controllers
             var mappedDep = mapper.Map<DepartmentViewModel, Department>(departmentVM);
             if (ModelState.IsValid)//Server side validation
 			{
-				var count=_repostry.Add(mappedDep);
+				unitOfWork.DepartmentRepository.Add(mappedDep);
+				var count = unitOfWork.Complete();
 				if (count > 0)
 					return RedirectToAction(nameof(Index));
 			}
@@ -62,7 +66,7 @@ namespace RouteC41.G02.PL.Controllers
 		{
 			if (/*id is null*/ !id.HasValue)
 				return BadRequest();
-			var department = _repostry.GetById(id.Value);
+			var department = unitOfWork.DepartmentRepository.GetById(id.Value);
 			if(department is null)
 				return NotFound();
 
@@ -106,7 +110,8 @@ namespace RouteC41.G02.PL.Controllers
 			
 			try
 			{
-                _repostry.Update(mappedDep);
+                unitOfWork.DepartmentRepository.Update(mappedDep);
+				unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
 			}
 			catch (Exception ex)
@@ -137,7 +142,8 @@ namespace RouteC41.G02.PL.Controllers
             try
 			{
 				var mappedDep=mapper.Map<DepartmentViewModel,Department>(departmentVM);
-				_repostry.Delete(mappedDep);
+				unitOfWork.DepartmentRepository.Delete(mappedDep);
+				unitOfWork.Complete();
 				return RedirectToAction(nameof(Index));
 			}
 			catch (Exception ex)
