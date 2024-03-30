@@ -5,13 +5,14 @@ using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Models;
 using System;
+using System.Linq;
 
 namespace RouteC41.G02.PL.Controllers
 {
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _repository;
-        private readonly IDepartmentReposotry _departmentRepo;
+      //  private readonly IDepartmentReposotry _departmentRepo;
         private readonly IWebHostEnvironment env;
 
         public EmployeeController(IEmployeeRepository repository /*,IDepartmentReposotry departmentRepo*/, IWebHostEnvironment env)
@@ -19,21 +20,35 @@ namespace RouteC41.G02.PL.Controllers
             _repository = repository;
             this.env = env;
         }
-        public IActionResult Index()
+        public IActionResult Index(string searchInp)
         {
-            TempData.Keep();
+            //TempData.Keep();
+            var employees=Enumerable.Empty<Employee>();
 
-            //Binding Through Views's Dictionary:Transfer Data From Action To View and should be sent through the action that has same view name [One way]
+            #region ViewBagVsViewData
+            ////Binding Through Views's Dictionary:Transfer Data From Action To View and should be sent through the action that has same view name [One way]
 
-            //1.ViewData
-            ViewData["Message"] = "Hello ViewData";
+            ////1.ViewData
+            //ViewData["Message"] = "Hello ViewData";
 
 
-            //2.ViewBag is a dynamic property based
-            ViewBag.Message = "Hello From ViewBag";
+            ////2.ViewBag is a dynamic property based
+            //ViewBag.Message = "Hello From ViewBag"; 
+            #endregion
+            if(string.IsNullOrEmpty(searchInp))
+            {
+                 employees = _repository.GetAll();
+          
 
-            var employees = _repository.GetAll();
+            }
+            else
+            {
+                 employees=_repository.SearchByName(searchInp.ToLower());
+                
+            }
             return View(employees);
+
+
         }
 
         [HttpGet]
