@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Http;
 
 namespace RouteC41.G02.PL.ViewModels
 {
@@ -25,6 +26,7 @@ namespace RouteC41.G02.PL.ViewModels
         [Display(Name = "IsActive")]
         public bool isActive;
         [EmailAddress]
+        [DisplayName("Email")]
         public string EmailAddress { get; set; }
         [Display(Name = "Phone Number")]
         [Phone]
@@ -37,5 +39,8 @@ namespace RouteC41.G02.PL.ViewModels
         //Navigational property
         //[InverseProperty(nameof(Models.Department.Employees))]
         public Department Department { get; set; }
+
+        public IFormFile Image  { get; set; }
+        public string ImageName { get; set; }
     }
 }

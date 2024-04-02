@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Models;
+using RouteC41.G02.PL.Helpers;
 using RouteC41.G02.PL.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -68,35 +69,29 @@ namespace RouteC41.G02.PL.Controllers
         [HttpPost]
         public IActionResult Create(EmployeeViewModel employeeVM)
         {
-            var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
             if (ModelState.IsValid)
             {
+                employeeVM.ImageName=DocumentSettings.UploadFile(employeeVM.Image, "Images");
+                var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+
                 unitOfWork.Repository<Employee>().Add(mappedEmp);
 
-                //2.Update Department
-                // unitOfWork.DepartmentRepository.Update(department)
-
-                //delete project
-                //unitOfWork.ProjectRepository.Remove(Project);
+                ///2.Update Department
+                /// unitOfWork.DepartmentRepository.Update(department)
+                ///delete project
+                ///unitOfWork.ProjectRepository.Remove(Project);
 
                 var Count=unitOfWork.Complete();
 
-                //3.TempData:Dictionary Type Property used to pass date between two consecutive requests if we want to complete more than that we use keep
                 if (Count > 0)
-                
-                   TempData["Message"] = "Employee Has Created Succesfully";
-                
-                else
-                
-                   TempData["Message"] = "An Error Has Occured Employee Can't be Created";
-                
- 
-                
-                return RedirectToAction(nameof(Index));
+                {
+                    return RedirectToAction(nameof(Index));
+
+                }
 
             }
 
-            return View(mappedEmp);
+            return View(employeeVM);
         }
 
         [HttpGet]

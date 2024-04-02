@@ -26,13 +26,12 @@ namespace RouteC41.G02.DAL.Models
     }
     public class Employee:ModelBase
     {
-
-
+        #region Data
         public string Name { get; set; }
 
         public int Age { get; set; }
 
-        public string  Address { get; set; }
+        public string Address { get; set; }
 
         public decimal Salary { get; set; }
 
@@ -47,19 +46,17 @@ namespace RouteC41.G02.DAL.Models
 
         public bool IsDeleted { get; set; }
 
-        
-        public int? DepartmentId { get; set; } //FK column
-
-        //[InverseProperty(nameof(Models.Department.Employees))]
-        //Navigational Property=>one
-        public Department Department { get; set; }
-
-
-
-        [DisplayName("Gender")]
         public Gender Gneder { get; set; }
 
         public EmpType EmpType { get; set; }
+        #endregion
+
+        public string  ImageName { get; set; }
+
+        public int? DepartmentId { get; set; } //FK column
+
+        //Navigational Property=>one
+        public Department Department { get; set; }
 
 
     }
