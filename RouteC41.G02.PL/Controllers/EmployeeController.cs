@@ -101,9 +101,12 @@ namespace RouteC41.G02.PL.Controllers
                 return BadRequest();
 
             var employee = unitOfWork.Repository<Employee>().GetById(id.Value);
-            var mappedEmp = mapper.Map<Employee, EmployeeViewModel>(employee);
             if (employee == null)
                 return NotFound();
+            if(ViewName.Equals("Delete",StringComparison.OrdinalIgnoreCase))
+                 TempData["ImageName"] = employee.ImageName;
+
+            var mappedEmp = mapper.Map<Employee, EmployeeViewModel>(employee);
 
 
             return View(ViewName,mappedEmp);
@@ -163,10 +166,19 @@ namespace RouteC41.G02.PL.Controllers
 
             try
             {
+                employeeVM.ImageName = TempData["ImageName"] as string;
                 var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
                 unitOfWork.Repository<Employee>().Delete(mappedEmp);
-                unitOfWork.Complete();
-                return RedirectToAction(nameof(Index));
+               var count= unitOfWork.Complete();
+                if(count>0)
+                {
+                    DocumentSettings.Delete(employeeVM.ImageName, "Images");
+                    return RedirectToAction(nameof(Index));
+
+                }
+                return View(employeeVM);
+
+
             }
             catch (Exception ex)
             {
