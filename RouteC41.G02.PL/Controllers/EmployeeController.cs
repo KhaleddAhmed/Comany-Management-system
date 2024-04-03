@@ -10,6 +10,7 @@ using RouteC41.G02.PL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RouteC41.G02.PL.Controllers
 {
@@ -27,7 +28,7 @@ namespace RouteC41.G02.PL.Controllers
             this.env = env;
             this.mapper = mapper;
         }
-        public IActionResult Index(string searchInp)
+        public async Task<IActionResult> Index(string searchInp)
         {
             //TempData.Keep();
             var employees=Enumerable.Empty<Employee>();
@@ -44,7 +45,7 @@ namespace RouteC41.G02.PL.Controllers
             #endregion
             if (string.IsNullOrEmpty(searchInp))
             {
-                 employees =employeeRepo.GetAll();
+                 employees =await employeeRepo.GetAllAsync();
           
 
             }
@@ -67,11 +68,11 @@ namespace RouteC41.G02.PL.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(EmployeeViewModel employeeVM)
+        public async Task<IActionResult> Create(EmployeeViewModel employeeVM)
         {
             if (ModelState.IsValid)
             {
-                employeeVM.ImageName=DocumentSettings.UploadFile(employeeVM.Image, "Images");
+                employeeVM.ImageName=await DocumentSettings.UploadFile(employeeVM.Image, "Images");
                 var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
 
                 unitOfWork.Repository<Employee>().Add(mappedEmp);
@@ -81,7 +82,7 @@ namespace RouteC41.G02.PL.Controllers
                 ///delete project
                 ///unitOfWork.ProjectRepository.Remove(Project);
 
-                var Count=unitOfWork.Complete();
+                var Count= await unitOfWork.Complete();
 
                 if (Count > 0)
                 {
@@ -95,12 +96,12 @@ namespace RouteC41.G02.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int? id, string ViewName = "Details")
+        public async Task<IActionResult> Details(int? id, string ViewName = "Details")
         {
             if (id is null)
                 return BadRequest();
 
-            var employee = unitOfWork.Repository<Employee>().GetById(id.Value);
+            var employee = await unitOfWork.Repository<Employee>().GetByIdAsync(id.Value);
             if (employee == null)
                 return NotFound();
             if(ViewName.Equals("Delete",StringComparison.OrdinalIgnoreCase))
@@ -114,10 +115,10 @@ namespace RouteC41.G02.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             //ViewData["Departments"] = _departmentRepo.GetAll();
-            return Details(id, "Edit");
+             return await Details(id, "Edit");
 
         }
 
@@ -154,14 +155,14 @@ namespace RouteC41.G02.PL.Controllers
 
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task <IActionResult> Delete(int? id)
         {
-            return Details(id, "Delete");
+            return  await Details(id, "Delete");
 
         }
 
         [HttpPost]
-        public IActionResult Delete(EmployeeViewModel employeeVM)
+        public async Task<IActionResult> Delete(EmployeeViewModel employeeVM)
         {
 
             try
@@ -169,7 +170,7 @@ namespace RouteC41.G02.PL.Controllers
                 employeeVM.ImageName = TempData["ImageName"] as string;
                 var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
                 unitOfWork.Repository<Employee>().Delete(mappedEmp);
-               var count= unitOfWork.Complete();
+               var count= await unitOfWork.Complete();
                 if(count>0)
                 {
                     DocumentSettings.Delete(employeeVM.ImageName, "Images");

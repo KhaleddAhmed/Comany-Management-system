@@ -56,16 +56,19 @@ namespace RouteC41.G02.BLL
            
         }
 
-        public int Complete()
+        public async Task<int> Complete()
         {
-           return dbContext.SaveChanges();
+           return await dbContext.SaveChangesAsync();
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            dbContext.Dispose();//close connection
-
+            await dbContext.DisposeAsync();//close connection
 
         }
+
+
+
+
     }
 }

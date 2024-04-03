@@ -25,6 +25,8 @@ namespace RouteC41.G02.BLL.Repositries
         public IQueryable<Employee> SearchByName(string name)
         
            => _context.Employees.Where(E=>E.Name.ToLower().Contains(name));
-        
+        public override async Task<IEnumerable<Employee>> GetAllAsync()
+        => await _context.Employees.Include(E => E.Department).AsNoTracking().ToListAsync();
+
     }
 }
