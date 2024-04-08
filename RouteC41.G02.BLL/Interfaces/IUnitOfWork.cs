@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace RouteC41.G02.BLL.Interfaces
 {
-    public interface IEmployeeRepository:IGenericRepository<Employee>
+    public interface IUnitOfWork:IDisposable
     {
-        IQueryable<Employee> GetEmployeesByAddress(string address);
+        IGenericRepository<T> Repository<T>()where T:ModelBase;
 
-        IQueryable<Employee> SearchByName(string name);
+        int Complete();
     }
 }

@@ -21,5 +21,10 @@ namespace RouteC41.G02.BLL.Repositries
         {
           return  _context.Employees.Where(E=> E.Address.ToLower() == address.ToLower());   
         }
+
+        public IQueryable<Employee> SearchByName(string name)
+        
+           => _context.Employees.Where(E=>E.Name.ToLower().Contains(name));
+        
     }
 }
