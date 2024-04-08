@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RouteC41.G02.BLL.Interfaces;
+using RouteC41.G02.BLL.Repositries;
+using RouteC41.G02.DAL.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +27,16 @@ namespace RouteC41.G02.PL
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews();//Register BUILT-In Services Required For Mvc
+            ///services.AddTransient<ApplicationDbContext>();
+            /// services.AddScoped<ApplicationDbContext>();
+            ///services.AddSingleton<ApplicationDbContext>();
+            ///services.AddScoped<DbContextOptions<ApplicationDbContext>>();
+            services.AddDbContext<ApplicationDbContext>(options=>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+            });
+            services.AddScoped<IDepartmentReposotry, DepartmentRepostry>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,7 +57,6 @@ namespace RouteC41.G02.PL
 
             app.UseRouting();
 
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -53,5 +65,5 @@ namespace RouteC41.G02.PL
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-    }
+    } 
 }
