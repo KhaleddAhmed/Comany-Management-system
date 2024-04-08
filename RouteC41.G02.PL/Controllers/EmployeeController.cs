@@ -5,10 +5,12 @@ using Microsoft.Extensions.Hosting;
 using RouteC41.G02.BLL.Interfaces;
 using RouteC41.G02.BLL.Repositries;
 using RouteC41.G02.DAL.Models;
+using RouteC41.G02.PL.Helpers;
 using RouteC41.G02.PL.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RouteC41.G02.PL.Controllers
 {
@@ -26,7 +28,7 @@ namespace RouteC41.G02.PL.Controllers
             this.env = env;
             this.mapper = mapper;
         }
-        public IActionResult Index(string searchInp)
+        public async Task<IActionResult> Index(string searchInp)
         {
             //TempData.Keep();
             var employees=Enumerable.Empty<Employee>();
@@ -43,7 +45,7 @@ namespace RouteC41.G02.PL.Controllers
             #endregion
             if (string.IsNullOrEmpty(searchInp))
             {
-                 employees =employeeRepo.GetAll();
+                 employees =await employeeRepo.GetAllAsync();
           
 
             }
@@ -66,49 +68,46 @@ namespace RouteC41.G02.PL.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(EmployeeViewModel employeeVM)
+        public async Task<IActionResult> Create(EmployeeViewModel employeeVM)
         {
-            var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
             if (ModelState.IsValid)
             {
+                employeeVM.ImageName=await DocumentSettings.UploadFile(employeeVM.Image, "Images");
+                var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
+
                 unitOfWork.Repository<Employee>().Add(mappedEmp);
 
-                //2.Update Department
-                // unitOfWork.DepartmentRepository.Update(department)
+                ///2.Update Department
+                /// unitOfWork.DepartmentRepository.Update(department)
+                ///delete project
+                ///unitOfWork.ProjectRepository.Remove(Project);
 
-                //delete project
-                //unitOfWork.ProjectRepository.Remove(Project);
+                var Count= await unitOfWork.Complete();
 
-                var Count=unitOfWork.Complete();
-
-                //3.TempData:Dictionary Type Property used to pass date between two consecutive requests if we want to complete more than that we use keep
                 if (Count > 0)
-                
-                   TempData["Message"] = "Employee Has Created Succesfully";
-                
-                else
-                
-                   TempData["Message"] = "An Error Has Occured Employee Can't be Created";
-                
- 
-                
-                return RedirectToAction(nameof(Index));
+                {
+                    return RedirectToAction(nameof(Index));
+
+                }
 
             }
 
-            return View(mappedEmp);
+            return View(employeeVM);
         }
 
         [HttpGet]
-        public IActionResult Details(int? id, string ViewName = "Details")
+        public async Task<IActionResult> Details(int? id, string ViewName = "Details")
         {
             if (id is null)
                 return BadRequest();
 
-            var employee = unitOfWork.Repository<Employee>().GetById(id.Value);
-            var mappedEmp = mapper.Map<Employee, EmployeeViewModel>(employee);
+            var employee = await unitOfWork.Repository<Employee>().GetByIdAsync(id.Value);
             if (employee == null)
                 return NotFound();
+            if(ViewName.Equals("Delete",StringComparison.OrdinalIgnoreCase))
+                 TempData["ImageName"] = employee.ImageName;
+
+            var mappedEmp = mapper.Map<Employee, EmployeeViewModel>(employee);
 
 
             return View(ViewName,mappedEmp);
@@ -116,10 +115,10 @@ namespace RouteC41.G02.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             //ViewData["Departments"] = _departmentRepo.GetAll();
-            return Details(id, "Edit");
+             return await Details(id, "Edit");
 
         }
 
@@ -156,22 +155,31 @@ namespace RouteC41.G02.PL.Controllers
 
 
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task <IActionResult> Delete(int? id)
         {
-            return Details(id, "Delete");
+            return  await Details(id, "Delete");
 
         }
 
         [HttpPost]
-        public IActionResult Delete(EmployeeViewModel employeeVM)
+        public async Task<IActionResult> Delete(EmployeeViewModel employeeVM)
         {
 
             try
             {
+                employeeVM.ImageName = TempData["ImageName"] as string;
                 var mappedEmp = mapper.Map<EmployeeViewModel, Employee>(employeeVM);
                 unitOfWork.Repository<Employee>().Delete(mappedEmp);
-                unitOfWork.Complete();
-                return RedirectToAction(nameof(Index));
+               var count= await unitOfWork.Complete();
+                if(count>0)
+                {
+                    DocumentSettings.Delete(employeeVM.ImageName, "Images");
+                    return RedirectToAction(nameof(Index));
+
+                }
+                return View(employeeVM);
+
+
             }
             catch (Exception ex)
             {

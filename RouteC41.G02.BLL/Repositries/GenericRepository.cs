@@ -18,8 +18,8 @@ namespace RouteC41.G02.BLL.Repositries
         {
             _context = dbContext;
         }
-        public void Add(T entity)
-          => _context.Set<T>().Add(entity);
+        public  void Add(T entity)
+          =>  _context.Set<T>().Add(entity);
 
 
            
@@ -33,22 +33,22 @@ namespace RouteC41.G02.BLL.Repositries
            => _context.Set<T>().Remove(entity);
     
         
-        public IEnumerable<T> GetAll()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             if(typeof(T)==typeof(Employee))
-                return (IEnumerable<T>) _context.Employees.Include(E=>E.Department).AsNoTracking();
+                return (IEnumerable<T>) await _context.Employees.Include(E=>E.Department).AsNoTracking().ToListAsync();
             else
-                return _context.Set<T>().AsNoTracking().ToList();
+                return await _context.Set<T>().AsNoTracking().ToListAsync();
         }
 
-        public T GetById(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
             ///var Employee=_context.Employees.Local.Where(D=>D.Id==id).FirstOrDefault();
             ///if (Employee==null)
             ///	 Employee = _context.Employees.Where(D => D.Id == id).FirstOrDefault();
             ///return Employee;
 
-            return _context.Set<T>().Find(id);
+            return await _context.Set<T>().FindAsync(id);
 
         }
     }
