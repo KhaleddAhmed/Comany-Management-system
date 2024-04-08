@@ -37,6 +37,7 @@ namespace RouteC41.G02.PL
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
             services.AddScoped<IDepartmentReposotry, DepartmentRepostry>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
