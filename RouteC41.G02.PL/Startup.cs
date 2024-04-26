@@ -61,9 +61,25 @@ namespace RouteC41.G02.PL
                 
             }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddAuthentication();
-       
-        }
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.LoginPath = "/Account/SignIn";
+				options.ExpireTimeSpan = TimeSpan.FromDays(1);
+				options.AccessDeniedPath = "/Home/Error";
+			});
+
+			//services.AddAuthentication("Hamda");
+			services.AddAuthentication(options =>
+			{
+				//options.DefaultAuthenticateScheme = "Identity.Application";
+			}).AddCookie("Hamda", options =>
+			{
+				options.LoginPath = "/Account/SignIn";
+				options.ExpireTimeSpan = TimeSpan.FromDays(1);
+				options.AccessDeniedPath = "/Home/Error";
+			});
+
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -82,6 +98,8 @@ namespace RouteC41.G02.PL
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
 
             app.UseEndpoints(endpoints =>

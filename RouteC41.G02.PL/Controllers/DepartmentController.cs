@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -15,6 +16,7 @@ namespace RouteC41.G02.PL.Controllers
 {
 	//Inheritance : Department Controller is a Controller
 	//Association :Department Controller Has a DepartmentRepostry
+	[Authorize]
 	public class DepartmentController : Controller
 	{
         private readonly IUnitOfWork unitOfWork;
