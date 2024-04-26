@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using RouteC41.G02.DAL.Models;
 using RouteC41.G02.PL.ViewModels.User;
 using System.Threading.Tasks;
@@ -103,5 +104,27 @@ namespace RouteC41.G02.PL.Controllers
 		await signInManager.SignOutAsync();
 		return RedirectToAction(nameof(SignIn));
 	}
+
+	public IActionResult ForgetPassword()
+	{
+		return View();
+	}
+	[HttpPost]
+	public async Task<IActionResult> SendResetPasswordEmail(ForgetPasswordViewModel model)
+	{
+		if (ModelState.IsValid)
+		{
+			var user = await userManager.FindByEmailAsync(model.Email);
+			if (user is not null)
+			{
+				//send email
+			}
+			ModelState.AddModelError(string.Empty, "There is not account with this email");
+		}
+		return View(model);
+
+	}
+
+
 }
 }
